@@ -16,6 +16,8 @@
 
 #include <dots-core/pins.h>
 #include <dots-core/bits.h>
+#include <dots-core/util.h>
+
 #include <avr/pgmspace.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -79,21 +81,7 @@ OS_INLINE pin_descriptor* get_pin_descriptor(dpin_t p) {
 } // namespace {}
 
 
-
-
-
-struct keep_interrupt_flag {
-    keep_interrupt_flag() : sreg(SREG) {
-        cli();
-    }
-
-    ~keep_interrupt_flag() {
-        SREG = sreg;
-    }
-
-private:
-    byte_t sreg;
-};
+using os::util::keep_interrupt_flag;
 
 bool set_pin_mode(dpin_t p, pin_mode m) {
     auto desc = get_pin_descriptor(p);
