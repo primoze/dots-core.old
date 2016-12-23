@@ -30,28 +30,30 @@ struct pin_descriptor {
     pioreg_t ddr;
     pioreg_t port;
     byte_t pin;
+    pioreg_t input;
+    byte_t in_pin;
 } OS_PACKED;
 
 
 const pin_descriptor digital_pins[] PROGMEM = {
         // Port D: Pins 0 - 7
-        { &DDRD, &PORTD, PORTD0 },
-        { &DDRD, &PORTD, PORTD1 },
-        { &DDRD, &PORTD, PORTD2 },
-        { &DDRD, &PORTD, PORTD3 },
-        { &DDRD, &PORTD, PORTD4 },
-        { &DDRD, &PORTD, PORTD5 },
-        { &DDRD, &PORTD, PORTD6 },
-        { &DDRD, &PORTD, PORTD7 },
+        { &DDRD, &PORTD, PORTD0, &PIND, PIND0 },
+        { &DDRD, &PORTD, PORTD1, &PIND, PIND1 },
+        { &DDRD, &PORTD, PORTD2, &PIND, PIND2 },
+        { &DDRD, &PORTD, PORTD3, &PIND, PIND3 },
+        { &DDRD, &PORTD, PORTD4, &PIND, PIND4 },
+        { &DDRD, &PORTD, PORTD5, &PIND, PIND5 },
+        { &DDRD, &PORTD, PORTD6, &PIND, PIND6 },
+        { &DDRD, &PORTD, PORTD7, &PIND, PIND7 },
         // Port B: Pins 8 - 13
-        { &DDRB, &PORTB, PORTB0 },
-        { &DDRB, &PORTB, PORTB1 },
-        { &DDRB, &PORTB, PORTB2 },
-        { &DDRB, &PORTB, PORTB3 },
-        { &DDRB, &PORTB, PORTB4 },
-        { &DDRB, &PORTB, PORTB5 },
-        { &DDRB, &PORTB, PORTB6 },
-        { &DDRB, &PORTB, PORTB7 }
+        { &DDRB, &PORTB, PORTB0, &PINB, PINB0 },
+        { &DDRB, &PORTB, PORTB1, &PINB, PINB1 },
+        { &DDRB, &PORTB, PORTB2, &PINB, PINB2 },
+        { &DDRB, &PORTB, PORTB3, &PINB, PINB3 },
+        { &DDRB, &PORTB, PORTB4, &PINB, PINB4 },
+        { &DDRB, &PORTB, PORTB5, &PINB, PINB5 },
+        { &DDRB, &PORTB, PORTB6, &PINB, PINB6 },
+        { &DDRB, &PORTB, PORTB7, &PINB, PINB7 }
 };
 
 constexpr byte_t digital_pin_count = sizeof(digital_pins) / sizeof(digital_pins[0]);
@@ -68,6 +70,14 @@ OS_INLINE byte_t get_pin(pin_descriptor* p) {
     return pgm_read_byte(&p->pin);
 }
 
+OS_INLINE pioreg_t get_input(pin_descriptor* p) {
+    return (pioreg_t)pgm_read_word(&p->input);
+}
+
+OS_INLINE byte_t get_in_pin(pin_descriptor* p) {
+    return pgm_read_byte(&p->in_pin);
+}
+
 OS_INLINE pin_descriptor* get_pin_descriptor(dpin_t p) {
     if(p.pin > digital_pin_count) {
         return nullptr;
@@ -82,6 +92,7 @@ OS_INLINE pin_descriptor* get_pin_descriptor(dpin_t p) {
 
 
 using os::util::keep_interrupt_flag;
+
 
 bool set_pin_mode(dpin_t p, pin_mode m) {
     auto desc = get_pin_descriptor(p);
@@ -127,6 +138,20 @@ bool set_pin_state(dpin_t p, pin_state s) {
         return false;
     }
 
+    return true;
+}
+
+bool get_pin_state(dpin_t p, pin_state& s) {
+    auto desc = get_pin_descriptor(p);
+    if(!desc) {
+        return false;
+    }
+
+    pioreg_t port = get_input(desc);
+    byte_t bit = get_in_pin(desc);
+
+    keep_interrupt_flag keep;
+    s = os::get_bit(*port, bit) ? pin_state::high : pin_state::low;
     return true;
 }
 

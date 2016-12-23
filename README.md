@@ -78,3 +78,7 @@ timer1_t timer1;
 usart0_t usart0;
 stdout_t stdout;
 ```
+
+You'll need to implement your own interrupt handlers.
+
+

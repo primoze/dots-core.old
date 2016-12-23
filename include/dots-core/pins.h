@@ -36,6 +36,10 @@ enum class pin_state : byte_t {
     low, high
 };
 
+OS_INLINE os::pin_state invert_pin_state(os::pin_state s) {
+    return s == os::pin_state::high ? os::pin_state::low : os::pin_state::high;
+}
+
 template <pin_type _type>
 struct io_pin {
     io_pin(byte_t p) : pin(p) { }
@@ -46,10 +50,9 @@ struct io_pin {
 typedef io_pin<pin_type::analog> apin_t;
 typedef io_pin<pin_type::digital> dpin_t;
 
-constexpr byte_t invalid_pin = 0xff;
-
 bool set_pin_mode(dpin_t p, pin_mode m);
-bool set_pin_state(dpin_t, pin_state s);
+bool set_pin_state(dpin_t p, pin_state s);
+bool get_pin_state(dpin_t p, pin_state& s);
 
 }
 
