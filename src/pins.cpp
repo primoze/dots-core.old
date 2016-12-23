@@ -26,6 +26,7 @@ namespace os {
 namespace {
 
 
+
 struct pin_descriptor {
     pioreg_t ddr;
     pioreg_t port;
@@ -33,7 +34,6 @@ struct pin_descriptor {
     pioreg_t input;
     byte_t in_pin;
 } OS_PACKED;
-
 
 const pin_descriptor digital_pins[] PROGMEM = {
         // Port D: Pins 0 - 7

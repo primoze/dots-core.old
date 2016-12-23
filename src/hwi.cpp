@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-#include <dots-core/interrupts.h>
 #include <dots-core/bits.h>
 #include <dots-core/pins.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
+#include <dots-core/hwi.h>
 
 namespace os {
-namespace isr {
+namespace hwi {
 
 namespace {
-struct isr_descriptor {
+
+struct hwi_descriptor {
     pioreg_t eicr;
     byte_t iscn;
     pioreg_t eimsk;
     byte_t intn;
 } OS_PACKED;
 
-const isr_descriptor pin_interrupts[] PROGMEM = {
+const hwi_descriptor pin_interrupts[] PROGMEM = {
         { &EICRA, ISC00, &EIMSK, INT0 },
         { &EICRA, ISC10, &EIMSK, INT1 }
 };
@@ -50,7 +51,7 @@ OS_INLINE vect_t get_pin_vector(dpin_t p) {
     return no_vector;
 }
 
-OS_INLINE const isr_descriptor* get_isr_descriptor(dpin_t p) {
+OS_INLINE const hwi_descriptor* get_isr_descriptor(dpin_t p) {
     vect_t v = get_pin_vector(p);
     if(no_vector == v) {
         return nullptr;
@@ -59,19 +60,19 @@ OS_INLINE const isr_descriptor* get_isr_descriptor(dpin_t p) {
     return pin_interrupts + v;
 }
 
-OS_INLINE pioreg_t get_eicr(const isr_descriptor* p) {
+OS_INLINE pioreg_t get_eicr(const hwi_descriptor* p) {
     return (pioreg_t)pgm_read_word(&p->eicr);
 }
 
-OS_INLINE byte_t get_iscn(const isr_descriptor* p) {
+OS_INLINE byte_t get_iscn(const hwi_descriptor* p) {
     return pgm_read_byte(&p->iscn);
 }
 
-OS_INLINE pioreg_t get_eimsk(const isr_descriptor* p) {
+OS_INLINE pioreg_t get_eimsk(const hwi_descriptor* p) {
     return (pioreg_t)pgm_read_word(&p->eimsk);
 }
 
-OS_INLINE byte_t get_intn(const isr_descriptor* p) {
+OS_INLINE byte_t get_intn(const hwi_descriptor* p) {
     return pgm_read_byte(&p->intn);
 }
 
@@ -84,7 +85,7 @@ OS_INLINE void invoke_handler(vect_t v) {
 }
 
 bool set_interrupt_handler(dpin_t p, isr_t h, trigger_mode m) {
-    const isr_descriptor* desc = get_isr_descriptor(p);
+    const hwi_descriptor* desc = get_isr_descriptor(p);
     if(!desc) {
         return false;
     }
@@ -122,8 +123,6 @@ ISR(INT0_vect) {
 ISR(INT1_vect) {
     invoke_handler(1);
 }
-
-
 
 
 }

@@ -22,7 +22,7 @@
 #include <dots-core/pins.h>
 
 namespace os {
-namespace isr {
+namespace hwi {
 
 
 enum class trigger_mode : byte_t {

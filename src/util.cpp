@@ -30,6 +30,22 @@ keep_interrupt_flag::~keep_interrupt_flag() {
 }
 
 
+void delay_us(uint16_t us) {
+    if(!us) {
+        return;
+    }
+
+    us <<= 2;
+    us--;
+    if(!us) {
+        return;
+    }
+
+    __asm__ __volatile__ (
+            "1: sbiw %0, 1" "\n\t"
+            "brne 1b" : "=w" (us) : "0" (us));
+}
+
 }
 }
 
