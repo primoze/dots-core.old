@@ -19,11 +19,46 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <dots-core/common.h>
 
+#include <dots-core/common.h>
+#include <dots-core/bits.h>
 
 namespace os {
 namespace timer {
+
+
+/**
+ * Timer mode.
+ */
+enum class mode : byte_t {
+    normal, ctc, fast_pwm, pc_pwm, pfc_pwm
+};
+
+
+/**
+ * 8bit Timer/Counter registers and bits.
+ */
+template <
+        class _timer_8bit_regs,
+        byte_t _wgm0,
+        byte_t _wgm1,
+        byte_t _wgm2,
+        byte_t _cs0,
+        byte_t _cs1,
+        byte_t _cs2,
+        byte_t _toie
+    >
+struct timer_8bit : public _timer_8bit_regs {
+    static constexpr byte_t wgm0 = _wgm0;
+    static constexpr byte_t wgm1 = _wgm1;
+    static constexpr byte_t wgm2 = _wgm2;
+    static constexpr byte_t cs0 = _cs0;
+    static constexpr byte_t cs1 = _cs1;
+    static constexpr byte_t cs2 = _cs2;
+    static constexpr byte_t toie = _toie;
+};
+
+
 
 constexpr uint32_t TIMER_8 = 0x100;
 constexpr uint32_t TIMER_16 = 0x10000;

@@ -40,6 +40,9 @@
 typedef uint8_t byte_t;
 typedef byte_t* ptr_t;
 
+typedef int int_t;
+typedef unsigned int uint_t;
+
 typedef uint16_t ioaddr_t;
 
 typedef volatile byte_t * const pioreg_t;
