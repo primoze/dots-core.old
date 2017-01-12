@@ -22,6 +22,7 @@
 
 #include <dots-core/common.h>
 #include <dots-core/bits.h>
+#include <dots-core/mmio.h>
 
 namespace os {
 namespace timer {
@@ -46,7 +47,10 @@ template <
         byte_t _cs0,
         byte_t _cs1,
         byte_t _cs2,
-        byte_t _toie
+        byte_t _toie,
+        byte_t _ocfa,
+        byte_t _ocfb,
+        byte_t _tov
     >
 struct timer_8bit : public _timer_8bit_regs {
     static constexpr byte_t wgm0 = _wgm0;
@@ -56,7 +60,15 @@ struct timer_8bit : public _timer_8bit_regs {
     static constexpr byte_t cs1 = _cs1;
     static constexpr byte_t cs2 = _cs2;
     static constexpr byte_t toie = _toie;
+    static constexpr byte_t ocfa = _ocfa;
+    static constexpr byte_t ocfb = _ocfb;
+    static constexpr byte_t tov = _tov;
 };
+
+
+typedef os::timer::timer_8bit<os::mmio::timer_0, WGM00, WGM01, WGM02, CS00, CS01, CS02, TOIE0, OCF0A, OCF0B, TOV0> timer0;
+typedef os::timer::timer_8bit<os::mmio::timer_2, WGM20, WGM21, WGM22, CS20, CS21, CS22, TOIE2, OCF2A, OCF2B, TOV2> timer2;
+
 
 
 
