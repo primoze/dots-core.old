@@ -42,7 +42,7 @@ template <
         byte_t _port_bit,
         byte_t _pin_bit
     >
-struct io_pin {
+struct io_pin : public _port_regs {
 
     static constexpr os::pin_type type = _type;
     static constexpr byte_t ddr_bit = _ddr_bit;
@@ -50,8 +50,7 @@ struct io_pin {
     static constexpr byte_t pin_bit = _pin_bit;
 
     static bool get_state() {
-        os::util::keep_interrupt_flag keep;
-        return os::get_bit(_MMIO_BYTE(_port_regs::port), port_bit);
+        return os::get_bit(_MMIO_BYTE(_port_regs::pin), pin_bit);
     }
 
     static void set_state(bool high) {
