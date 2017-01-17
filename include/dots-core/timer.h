@@ -36,6 +36,48 @@ enum class mode : byte_t {
 };
 
 
+template <
+        byte_t _wgm0,
+        byte_t _wgm1,
+        byte_t _wgm2,
+        byte_t _coma0,
+        byte_t _coma1,
+        byte_t _comb0,
+        byte_t _comb1,
+        byte_t _cs0,
+        byte_t _cs1,
+        byte_t _cs2,
+        byte_t _foca,
+        byte_t _focb,
+        byte_t _toie,
+        byte_t _ocfa,
+        byte_t _ocfb,
+        byte_t _tov
+    >
+struct __timer_bits {
+    static constexpr byte_t wgm0 = _wgm0;
+    static constexpr byte_t wgm1 = _wgm1;
+    static constexpr byte_t wgm2 = _wgm2;
+
+    static constexpr byte_t coma1 = _coma0;
+    static constexpr byte_t coma0 = _coma1;
+
+    static constexpr byte_t comb0 = _comb0;
+    static constexpr byte_t comb1 = _comb1;
+
+    static constexpr byte_t cs0 = _cs0;
+    static constexpr byte_t cs1 = _cs1;
+    static constexpr byte_t cs2 = _cs2;
+
+    static constexpr byte_t foca = _foca;
+    static constexpr byte_t focb = _focb;
+
+    static constexpr byte_t toie = _toie;
+    static constexpr byte_t ocfa = _ocfa;
+    static constexpr byte_t ocfb = _ocfb;
+    static constexpr byte_t tov = _tov;
+};
+
 /**
  * 8bit Timer/Counter registers and bits.
  */
@@ -44,32 +86,63 @@ template <
         byte_t _wgm0,
         byte_t _wgm1,
         byte_t _wgm2,
+        byte_t _coma0,
+        byte_t _coma1,
+        byte_t _comb0,
+        byte_t _comb1,
         byte_t _cs0,
         byte_t _cs1,
         byte_t _cs2,
+        byte_t _foca,
+        byte_t _focb,
         byte_t _toie,
         byte_t _ocfa,
         byte_t _ocfb,
         byte_t _tov
     >
-struct timer_8bit : public _timer_8bit_regs {
-    static constexpr byte_t wgm0 = _wgm0;
-    static constexpr byte_t wgm1 = _wgm1;
-    static constexpr byte_t wgm2 = _wgm2;
-    static constexpr byte_t cs0 = _cs0;
-    static constexpr byte_t cs1 = _cs1;
-    static constexpr byte_t cs2 = _cs2;
-    static constexpr byte_t toie = _toie;
-    static constexpr byte_t ocfa = _ocfa;
-    static constexpr byte_t ocfb = _ocfb;
-    static constexpr byte_t tov = _tov;
+struct timer_8bit : public __timer_bits <_wgm0, _wgm1, _wgm2, _coma0, _coma1, _comb0, _comb1, _cs0, _cs1, _cs2, _foca, _focb, _toie, _ocfa, _ocfb, _tov>, public _timer_8bit_regs {
+    static constexpr uint32_t resolution = 0x100;
 };
 
 
-typedef os::timer::timer_8bit<os::mmio::timer_0, WGM00, WGM01, WGM02, CS00, CS01, CS02, TOIE0, OCF0A, OCF0B, TOV0> timer0;
-typedef os::timer::timer_8bit<os::mmio::timer_2, WGM20, WGM21, WGM22, CS20, CS21, CS22, TOIE2, OCF2A, OCF2B, TOV2> timer2;
+typedef os::timer::timer_8bit<os::mmio::timer_0, WGM00, WGM01, WGM02, COM0A0, COM0A1, COM0B0, COM0B1, CS00, CS01, CS02, FOC0A, FOC0B, TOIE0, OCF0A, OCF0B, TOV0> timer0;
+typedef os::timer::timer_8bit<os::mmio::timer_2, WGM20, WGM21, WGM22, COM2A0, COM2A1, COM2B0, COM2B1, CS20, CS21, CS22, FOC2A, FOC2B, TOIE2, OCF2A, OCF2B, TOV2> timer2;
 
 
+/**
+ * 16bit Timer/Counter registers and bits.
+ */
+template <
+        class _timer_16bit_regs,
+        byte_t _wgm0,
+        byte_t _wgm1,
+        byte_t _wgm2,
+        byte_t _wgm3,
+        byte_t _coma0,
+        byte_t _coma1,
+        byte_t _comb0,
+        byte_t _comb1,
+        byte_t _cs0,
+        byte_t _cs1,
+        byte_t _cs2,
+        byte_t _icnc,
+        byte_t _ices,
+        byte_t _foca,
+        byte_t _focb,
+        byte_t _toie,
+        byte_t _ocfa,
+        byte_t _ocfb,
+        byte_t _tov
+    >
+struct timer_16bit : public __timer_bits <_wgm0, _wgm1, _wgm2, _coma0, _coma1, _comb0, _comb1, _cs0, _cs1, _cs2, _foca, _focb, _toie, _ocfa, _ocfb, _tov>, public _timer_16bit_regs {
+    static constexpr uint32_t resolution = 0x10000;
+
+    static constexpr byte_t wgm3 = _wgm3;
+    static constexpr byte_t icnc = _icnc;
+    static constexpr byte_t ices = _ices;
+};
+
+typedef os::timer::timer_16bit<os::mmio::timer_1, WGM10, WGM11, WGM12, WGM13, COM1A0, COM1A1, COM1B0, COM1B1, CS10, CS11, CS12, ICNC1, ICES1, FOC1A, FOC1B, TOIE1, OCF1A, OCF1B, TOV1> timer1;
 
 
 constexpr uint32_t TIMER_8 = 0x100;
@@ -85,9 +158,9 @@ constexpr uint32_t TIMER_16 = 0x10000;
 // };
 
 template <ioaddr_t _base, ioaddr_t _timsk>
-class timer_16bit {
+class timer_16bit2 {
 public:
-    timer_16bit() :
+    timer_16bit2() :
         tccra(&_MMIO_BYTE(_base + TCCRA)),
         tccrb(&_MMIO_BYTE(_base + TCCRB)),
         ticr(&_MMIO_WORD(_base + TICR)),
