@@ -35,6 +35,34 @@ enum class pin_mode : byte_t {
     input, input_pullup, output
 };
 
+struct pin_ops {
+    static OS_INLINE bool get_state(ioaddr_t pin, byte_t bit) {
+        return os::get_bit(_MMIO_BYTE(pin), bit);
+    }
+
+    static OS_INLINE void set_state(bool high, ioaddr_t port, byte_t bit) {
+        os::util::keep_interrupt_flag keep;
+        if(high) {
+            os::set_bit(_MMIO_BYTE(port), bit);
+        } else {
+            os::clear_bit(_MMIO_BYTE(port), bit);
+        }
+    }
+
+    static void set_mode(os::pin_mode m, ioaddr_t ddr, byte_t ddr_bit, ioaddr_t port, byte_t port_bit) {
+        os::util::keep_interrupt_flag keep;
+        if(os::pin_mode::input == m) {
+            os::clear_bit(_MMIO_BYTE(ddr), ddr_bit);
+            os::clear_bit(_MMIO_BYTE(port), port_bit);
+        } else if(os::pin_mode::input_pullup == m) {
+            os::clear_bit(_MMIO_BYTE(ddr), ddr_bit);
+            os::set_bit(_MMIO_BYTE(port), port_bit);
+        } else if(os::pin_mode::output == m) {
+            os::set_bit(_MMIO_BYTE(ddr), port_bit);
+        }
+    }
+};
+
 template <
         class _port_regs,
         os::pin_type _type,
@@ -44,35 +72,23 @@ template <
     >
 struct io_pin : public _port_regs {
 
+    typedef pin_ops _pin_ops_type;
+
     static constexpr os::pin_type type = _type;
     static constexpr byte_t ddr_bit = _ddr_bit;
     static constexpr byte_t port_bit = _port_bit;
     static constexpr byte_t pin_bit = _pin_bit;
 
-    static bool get_state() {
-        return os::get_bit(_MMIO_BYTE(_port_regs::pin), pin_bit);
+    static OS_INLINE bool get_state() {
+        return _pin_ops_type::get_state(_port_regs::pin, pin_bit);
     }
 
-    static void set_state(bool high) {
-        os::util::keep_interrupt_flag keep;
-        if(high) {
-            os::set_bit(_MMIO_BYTE(_port_regs::port), port_bit);
-        } else {
-            os::clear_bit(_MMIO_BYTE(_port_regs::port), port_bit);
-        }
+    static OS_INLINE void set_state(bool high) {
+        _pin_ops_type::set_state(high, _port_regs::port, port_bit);
     }
 
-    static void set_mode(os::pin_mode m) {
-        os::util::keep_interrupt_flag keep;
-        if(os::pin_mode::input == m) {
-            os::clear_bit(_MMIO_BYTE(_port_regs::ddr), ddr_bit);
-            os::clear_bit(_MMIO_BYTE(_port_regs::port), port_bit);
-        } else if(os::pin_mode::input_pullup == m) {
-            os::clear_bit(_MMIO_BYTE(_port_regs::ddr), ddr_bit);
-            os::set_bit(_MMIO_BYTE(_port_regs::port), port_bit);
-        } else if(os::pin_mode::output == m) {
-            os::set_bit(_MMIO_BYTE(_port_regs::ddr), port_bit);
-        }
+    static OS_INLINE void set_mode(os::pin_mode m) {
+        _pin_ops_type::set_mode(m, _port_regs::ddr, ddr_bit, _port_regs::port, port_bit);
     }
 
 protected:

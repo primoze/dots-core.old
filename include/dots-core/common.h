@@ -26,6 +26,8 @@
 // Declare C linkage
 #define OS_C_ABI extern "C"
 
+#define OS_NO_RETURN __attribute__((noreturn))
+
 // Make sure the compiler realy inlines if we say so
 #ifdef inline
 #	undef inline

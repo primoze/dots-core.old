@@ -19,6 +19,8 @@
 
 #include <dots-core/common.h>
 
+#include <avr/io.h>
+
 #define OS_PIOREG(p)            (pioreg_t)(p)
 
 namespace os {
@@ -48,40 +50,43 @@ struct __ei_regs {
 typedef __ei_regs<0x69, 0x3d> eia;
 
 
-// 8-bit timers
-template <ioaddr_t _base, ioaddr_t _msk, ioaddr_t _ifr>
+template <
+        class _tccra,
+        class _tccrb,
+        class _tcnt,
+        class _ocra,
+        class _ocrb,
+        class _timsk,
+        class _tifr
+    >
 struct __timer_8bit_regs {
-    static constexpr ioaddr_t base = _base;
-
-    static constexpr ioaddr_t tccra = _base;
-    static constexpr ioaddr_t tccrb = _base+1;
-    static constexpr ioaddr_t tcnt = _base+2;
-    static constexpr ioaddr_t ocra = _base+3;
-    static constexpr ioaddr_t ocrb = _base+4;
-    static constexpr ioaddr_t timsk = _msk;
-    static constexpr ioaddr_t tifr = _ifr;
+    typedef _tccra tccra;
+    typedef _tccrb tccrb;
+    typedef _tcnt tcnt;
+    typedef _ocra ocra;
+    typedef _ocrb ocrb;
+    typedef _timsk timsk;
+    typedef _tifr tifr;
 };
 
-// 16-bit timers
-template <ioaddr_t _base, ioaddr_t _msk, ioaddr_t _ifr>
-struct __timer_16bit_regs {
-    static constexpr ioaddr_t base = _base;
 
-    static constexpr ioaddr_t tccra = _base;
-    static constexpr ioaddr_t tccrb = _base+1;
-    static constexpr ioaddr_t tccrc = _base+2;
-    static constexpr ioaddr_t tcnt = _base+4;
-    static constexpr ioaddr_t icr = _base+6;
-    static constexpr ioaddr_t ocra = _base+8;
-    static constexpr ioaddr_t ocrb = _base+10;
-    static constexpr ioaddr_t timsk = _msk;
-    static constexpr ioaddr_t tifr = _ifr;
+template <
+        class _tccra,
+        class _tccrb,
+        class _tccrc,
+        class _tcnt,
+        class _ocra,
+        class _ocrb,
+        class _icr,
+        class _timsk,
+        class _tifr
+    >
+struct __timer_16bit_regs : public __timer_8bit_regs <_tccra, _tccrb, _tcnt, _ocra, _ocrb, _timsk, _tifr> {
+    typedef _tccrc tccrc;
+    typedef _icr icr;
 };
 
-typedef __timer_8bit_regs<0x44, 0x6e, 0x35> timer_0;
-typedef __timer_8bit_regs<0xb0, 0x70, 0x37> timer_2;
 
-typedef __timer_16bit_regs<0x80, 0x6f, 0x36> timer_1;
 
 }
 }

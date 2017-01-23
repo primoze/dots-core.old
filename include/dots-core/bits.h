@@ -51,6 +51,14 @@ void set_bit(T& t, byte_t bit) {
   t |= (T)_BV(bit);
 }
 
+template <typename T>
+OS_INLINE void set_bit_state(T& t, byte_t bit, bool s);
+
+template <typename T>
+void set_bit_state(T& t, byte_t bit, bool s) {
+  t = (t & ~_BV(bit)) | (s ? _BV(bit) : 0);
+}
+
 
 // Mask 't' with 'mask' << 'bit'
 template <typename T, typename U>
