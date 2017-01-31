@@ -20,7 +20,6 @@
 #include <avr/io.h>
 
 #include <dots-core/common.h>
-#include <dots-core/regs.h>
 #include <dots-core/mmio.h>
 
 namespace os {
@@ -39,7 +38,7 @@ enum class mode : byte_t {
  * TC 8-Bit Control Register A
  */
 template <ioaddr_t _addr, byte_t _wgm0, byte_t _wgm1, byte_t _coma0, byte_t _coma1, byte_t _comb0, byte_t _comb1>
-struct tccra_8bit : public os::regs::__io_reg <_addr> {
+struct tccra_8bit : public os::mmio::__io_reg <_addr> {
 
     static constexpr byte_t wgm0 = _wgm0;
     static constexpr byte_t wgm1 = _wgm1;
@@ -63,7 +62,7 @@ using tccra_16bit = tccra_8bit <_addr, _wgm0, _wgm1, _coma0, _coma1, _comb0, _co
  * TC 8-Bit Control Register B
  */
 template <ioaddr_t _addr, byte_t _cs0, byte_t _cs1, byte_t _cs2, byte_t _wgm2, byte_t _foca, byte_t _focb>
-struct tccrb_8bit : public os::regs::__io_reg <_addr> {
+struct tccrb_8bit : public os::mmio::__io_reg <_addr> {
 
     static constexpr byte_t cs0 = _cs0;
     static constexpr byte_t cs1 = _cs1;
@@ -80,7 +79,7 @@ struct tccrb_8bit : public os::regs::__io_reg <_addr> {
  * TC 16-Bit Control Register B
  */
 template <ioaddr_t _addr, byte_t _cs0, byte_t _cs1, byte_t _cs2, byte_t _wgm2, byte_t _wgm3, byte_t _icnc, byte_t _ices>
-struct tccrb_16bit : public os::regs::__io_reg <_addr> {
+struct tccrb_16bit : public os::mmio::__io_reg <_addr> {
 
     static constexpr byte_t cs0 = _cs0;
     static constexpr byte_t cs1 = _cs1;
@@ -98,7 +97,7 @@ struct tccrb_16bit : public os::regs::__io_reg <_addr> {
  * TC 16-Bit Control Register C
  */
 template <ioaddr_t _addr, byte_t _foca, byte_t _focb>
-struct tccrc_16bit : public os::regs::__io_reg <_addr> {
+struct tccrc_16bit : public os::mmio::__io_reg <_addr> {
 
     static constexpr byte_t foca = _foca;
     static constexpr byte_t focb = _focb;
@@ -109,37 +108,37 @@ struct tccrc_16bit : public os::regs::__io_reg <_addr> {
  * TC 8-Bit Timer Counter Register
  */
 template <ioaddr_t _addr>
-using tcnt_8bit = os::regs::__io_reg <_addr>;
+using tcnt_8bit = os::mmio::__io_reg <_addr>;
 
 /**
  * TC 16-Bit Timer Counter Register
  */
 template <ioaddr_t _addr>
-using tcnt_16bit = os::regs::__io_reg <_addr>;
+using tcnt_16bit = os::mmio::__io_reg <_addr>;
 
 /**
  * TC 8-Bit Output Compare Registers
  */
 template <ioaddr_t _addr>
-using ocr_8bit = os::regs::__io_reg <_addr>;
+using ocr_8bit = os::mmio::__io_reg <_addr>;
 
 /**
  * TC 8-Bit Output Compare Registers
  */
 template <ioaddr_t _addr>
-using ocr_16bit = os::regs::__io_reg <_addr>;
+using ocr_16bit = os::mmio::__io_reg <_addr>;
 
 /**
  * TC 16-Bit Input Capture Register
  */
 template <ioaddr_t _addr>
-using icr_16bit = os::regs::__io_reg <_addr>;
+using icr_16bit = os::mmio::__io_reg <_addr>;
 
 /**
  * TC 8-Bit Interrupt Register Base
  */
 template <ioaddr_t _addr, byte_t _toi, byte_t _ocia, byte_t _ocib>
-struct __ti_reg_8bit : public os::regs::__io_reg <_addr> {
+struct __ti_reg_8bit : public os::mmio::__io_reg <_addr> {
 
     static constexpr byte_t toi = _toi;
     static constexpr byte_t ocia = _ocia;

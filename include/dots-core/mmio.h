@@ -27,6 +27,11 @@ namespace os {
 namespace mmio {
 
 
+template <ioaddr_t _addr>
+struct __io_reg {
+    static constexpr ioaddr_t addr = _addr;
+};
+
 // Ports
 template <ioaddr_t _base>
 struct __port_regs {
@@ -41,15 +46,23 @@ typedef __port_regs<0x29> port_d;
 
 
 // External interrupts
-template <ioaddr_t _cr, ioaddr_t _msk>
+template <
+        class _pin,
+        class _eicr,
+        class _eimsk,
+        class _eifr,
+        byte_t _vect
+    >
 struct __ei_regs {
-    static constexpr ioaddr_t cr = _cr;
-    static constexpr ioaddr_t msk = _msk;
+    typedef _pin pin;
+    typedef _eicr eicr;
+    typedef _eimsk eimsk;
+    typedef _eifr eifr;
+
+    static constexpr byte_t vect = _vect;
 };
 
-typedef __ei_regs<0x69, 0x3d> eia;
-
-
+// Timers
 template <
         class _tccra,
         class _tccrb,

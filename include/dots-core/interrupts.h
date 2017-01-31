@@ -29,6 +29,58 @@ enum class trigger_mode : byte_t {
     low, change, falling, rising
 };
 
+/**
+ * External Interrupt Control Register
+ */
+template <ioaddr_t _addr, byte_t _isc0, byte_t _isc1>
+struct hwi_cr : public os::mmio::__io_reg <_addr> {
+    static constexpr byte_t isc0 = _isc0;
+    static constexpr byte_t isc1 = _isc1;
+};
+
+/**
+ * External Interrupt Mask Register
+ */
+template <ioaddr_t _addr, byte_t _intn>
+struct hwi_msk : public os::mmio::__io_reg <_addr> {
+    static constexpr byte_t intn = _intn;
+};
+
+/**
+ * External Interrupt Flag Register
+ */
+template <ioaddr_t _addr, byte_t _intfn>
+struct hwi_ifr : public os::mmio::__io_reg <_addr> {
+    static constexpr byte_t intfn = _intfn;
+};
+
+
+#if defined (__AVR_ATmega328P__) || defined (__AVR_ATmega2560__)
+
+typedef os::mmio::__ei_regs <
+        os::port_d::_2,
+        os::hwi_cr <0x69, ISC00, ISC01>,
+        os::hwi_msk <0x3d, INT0>,
+        os::hwi_ifr <0x3c, INTF0>,
+        0u
+> hwi0_regs;
+
+typedef os::mmio::__ei_regs <
+        os::port_d::_3,
+        os::hwi_cr <0x69, ISC10, ISC11>,
+        os::hwi_msk <0x3d, INT1>,
+        os::hwi_ifr <0x3c, INTF1>,
+        1u
+> hwi1_regs;
+
+#endif // defined (__AVR_ATmega328P__) || defined (__AVR_ATmega2560__)
+
+
+#if defined (__AVR_ATmega2560__)
+
+#endif // defined (__AVR_ATmega2560__)
+
+
 // Specifies no HWI vector for a given pin
 constexpr byte_t no_hwi_vect = 0xff;
 
@@ -36,48 +88,28 @@ constexpr byte_t no_hwi_vect = 0xff;
 OS_C_ABI void __os_set_interrupt_handler(byte_t vect, isr_t h);
 OS_C_ABI void __os_clear_interrupt_handler(byte_t vect);
 
-// HWI vector base
-template <class _pin, byte_t _vect_num, ioaddr_t _eicr, byte_t _iscn, ioaddr_t _eimsk, byte_t _intn>
+
+template <class _hwi_regs>
 struct __hwi_vect {
-    typedef _pin pin;
-    static constexpr byte_t vect_num = _vect_num;
+
+    typedef typename _hwi_regs::pin _pin_type;
 
     static void set_interrupt_handler(isr_t h, trigger_mode m) {
-        __os_set_interrupt_handler(vect_num, h);
+        __os_set_interrupt_handler(_hwi_regs::vect, h);
 
-        pioreg_t eicr = &_MMIO_BYTE(_eicr);
-        pioreg_t eimsk = &_MMIO_BYTE(_eimsk);
-
-        os::clear_mask(*eicr, 2, _iscn);
-        os::set_mask(*eicr, (byte_t)m, _iscn);
-        os::set_bit(*eimsk, _intn);
+        os::clear_mask(_MMIO_BYTE(_hwi_regs::eicr::addr), 2, _hwi_regs::eicr::isc0);
+        os::set_mask(_MMIO_BYTE(_hwi_regs::eicr::addr), (byte_t)m, _hwi_regs::eicr::isc0);
+        os::set_bit(_MMIO_BYTE(_hwi_regs::eimsk::addr), _hwi_regs::eimsk::intn);
     }
 
     static void clear_interrupt_handler() {
-        pioreg_t eicr = &_MMIO_BYTE(_eicr);
-        os::clear_mask(*eicr, 2, _iscn);
-        __os_clear_interrupt_handler(vect_num);
+        os::clear_mask(_MMIO_BYTE(_hwi_regs::eicr::addr), 2, _hwi_regs::eicr::iscn);
+        __os_clear_interrupt_handler(_hwi_regs::eicr::vect);
     }
 };
 
-template <class _pin>
-struct __hwi_vect<_pin, no_hwi_vect, 0, 0, 0, 0> { };
-
-// Generic HWI vector - doesn't exist
-template <class _pin>
-struct hwi_vect : public __hwi_vect<_pin, no_hwi_vect, 0, 0, 0, 0> { };
-
-// D2 - HWI 0
-template <>
-struct hwi_vect<port_d::_2> : public __hwi_vect<port_d::_2, 0, os::mmio::eia::cr, ISC00, os::mmio::eia::msk, INT0> { };
-
-// D3 - HWI 1
-template <>
-struct hwi_vect<port_d::_3> : public __hwi_vect<port_d::_3, 1, os::mmio::eia::cr, ISC10, os::mmio::eia::msk, INT1> { };
-
-// Shorthand
-typedef hwi_vect<port_d::_2> hwi0;
-typedef hwi_vect<port_d::_3> hwi1;
+typedef __hwi_vect <hwi0_regs> hwi0;
+typedef __hwi_vect <hwi1_regs> hwi1;
 
 }
 
