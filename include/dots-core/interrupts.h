@@ -19,7 +19,7 @@
 
 #include <dots-core/common.h>
 #include <dots-core/bits.h>
-#include <dots-core/pins.h>
+#include <dots-core/ports.h>
 #include <dots-core/mmio.h>
 
 namespace os {

@@ -33,16 +33,18 @@ struct __io_reg {
 };
 
 // Ports
-template <ioaddr_t _base>
+
+template <
+        class _pin,
+        class _ddr,
+        class _port
+    >
 struct __port_regs {
-    static constexpr ioaddr_t pin = _base;
-    static constexpr ioaddr_t ddr = _base+1;
-    static constexpr ioaddr_t port = _base+2;
+    typedef _pin pin;
+    typedef _ddr ddr;
+    typedef _port port;
 };
 
-typedef __port_regs<0x23> port_b;
-typedef __port_regs<0x26> port_c;
-typedef __port_regs<0x29> port_d;
 
 // USART
 template <
