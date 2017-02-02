@@ -46,6 +46,13 @@ void delay_us(uint16_t us) {
             "brne 1b" : "=w" (us) : "0" (us));
 }
 
+
+void delay_ms(uint16_t ms) {
+    for(uint_t i=0; i<ms; ++i) {
+        delay_us(1000);
+    }
+}
+
 }
 }
 

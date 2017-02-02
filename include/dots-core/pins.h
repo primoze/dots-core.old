@@ -58,7 +58,7 @@ struct pin_ops {
             os::clear_bit(_MMIO_BYTE(ddr), ddr_bit);
             os::set_bit(_MMIO_BYTE(port), port_bit);
         } else if(os::pin_mode::output == m) {
-            os::set_bit(_MMIO_BYTE(ddr), port_bit);
+            os::set_bit(_MMIO_BYTE(ddr), ddr_bit);
         }
     }
 };

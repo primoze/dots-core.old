@@ -44,22 +44,34 @@ typedef __port_regs<0x23> port_b;
 typedef __port_regs<0x26> port_c;
 typedef __port_regs<0x29> port_d;
 
+// USART
+template <
+        class _udr,
+        class _ucsra,
+        class _ucsrb,
+        class _ucsrc,
+        class _ubrr
+    >
+struct __usart_regs {
+    typedef _udr udr;
+    typedef _ucsra ucsra;
+    typedef _ucsrb ucsrb;
+    typedef _ucsrc ucsrc;
+    typedef _ubrr ubrr;
+};
 
 // External interrupts
 template <
         class _pin,
         class _eicr,
         class _eimsk,
-        class _eifr,
-        byte_t _vect
+        class _eifr
     >
 struct __ei_regs {
     typedef _pin pin;
     typedef _eicr eicr;
     typedef _eimsk eimsk;
     typedef _eifr eifr;
-
-    static constexpr byte_t vect = _vect;
 };
 
 // Timers

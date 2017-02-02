@@ -61,16 +61,14 @@ typedef os::mmio::__ei_regs <
         os::port_d::_2,
         os::hwi_cr <0x69, ISC00, ISC01>,
         os::hwi_msk <0x3d, INT0>,
-        os::hwi_ifr <0x3c, INTF0>,
-        0u
+        os::hwi_ifr <0x3c, INTF0>
 > hwi0_regs;
 
 typedef os::mmio::__ei_regs <
         os::port_d::_3,
         os::hwi_cr <0x69, ISC10, ISC11>,
         os::hwi_msk <0x3d, INT1>,
-        os::hwi_ifr <0x3c, INTF1>,
-        1u
+        os::hwi_ifr <0x3c, INTF1>
 > hwi1_regs;
 
 #endif // defined (__AVR_ATmega328P__) || defined (__AVR_ATmega2560__)
@@ -89,13 +87,15 @@ OS_C_ABI void __os_set_interrupt_handler(byte_t vect, isr_t h);
 OS_C_ABI void __os_clear_interrupt_handler(byte_t vect);
 
 
-template <class _hwi_regs>
+template <class _hwi_regs, byte_t _vect>
 struct __hwi_vect {
 
     typedef typename _hwi_regs::pin _pin_type;
 
+    static constexpr byte_t vect = _vect;
+
     static void set_interrupt_handler(isr_t h, trigger_mode m) {
-        __os_set_interrupt_handler(_hwi_regs::vect, h);
+        __os_set_interrupt_handler(vect, h);
 
         os::clear_mask(_MMIO_BYTE(_hwi_regs::eicr::addr), 2, _hwi_regs::eicr::isc0);
         os::set_mask(_MMIO_BYTE(_hwi_regs::eicr::addr), (byte_t)m, _hwi_regs::eicr::isc0);
@@ -108,8 +108,8 @@ struct __hwi_vect {
     }
 };
 
-typedef __hwi_vect <hwi0_regs> hwi0;
-typedef __hwi_vect <hwi1_regs> hwi1;
+typedef __hwi_vect <hwi0_regs, 0u> hwi0;
+typedef __hwi_vect <hwi1_regs, 1u> hwi1;
 
 }
 

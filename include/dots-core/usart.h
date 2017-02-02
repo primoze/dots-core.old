@@ -27,6 +27,39 @@
 namespace os {
 namespace usart {
 
+/**
+ * USART Data Register
+ */
+template <ioaddr_t _addr>
+using udr = os::mmio::__io_reg <_addr>;
+
+/**
+ * USART Status and Control Register A
+ */
+template <
+        ioaddr_t _addr,
+        byte_t _mpcm,
+        byte_t _u2x,
+        byte_t _upe,
+        byte_t _dor,
+        byte_t _fe,
+        byte_t _udre,
+        byte_t _txc,
+        byte_t _rxc
+    >
+struct ucsra : public os::mmio::__io_reg <_addr> {
+    static constexpr byte_t mpcm = _mpcm;
+    static constexpr byte_t u2x = _u2x;
+    static constexpr byte_t upe = _upe;
+    static constexpr byte_t dor = _dor;
+    static constexpr byte_t fe = _fe;
+    static constexpr byte_t udre = _udre;
+    static constexpr byte_t rxc = _rxc;
+    static constexpr byte_t txc = _txc;
+};
+
+
+
 
 
 // Writer for os::stream
