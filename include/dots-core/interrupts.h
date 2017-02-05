@@ -21,6 +21,7 @@
 #include <dots-core/bits.h>
 #include <dots-core/ports.h>
 #include <dots-core/mmio.h>
+#include <dots-core/meta.h>
 
 namespace os {
 
@@ -55,29 +56,6 @@ struct hwi_ifr : public os::mmio::__io_reg <_addr> {
 };
 
 
-#if defined (__AVR_ATmega328P__) || defined (__AVR_ATmega2560__)
-
-typedef os::mmio::__ei_regs <
-        os::port_d::_2,
-        os::hwi_cr <0x69, ISC00, ISC01>,
-        os::hwi_msk <0x3d, INT0>,
-        os::hwi_ifr <0x3c, INTF0>
-> hwi0_regs;
-
-typedef os::mmio::__ei_regs <
-        os::port_d::_3,
-        os::hwi_cr <0x69, ISC10, ISC11>,
-        os::hwi_msk <0x3d, INT1>,
-        os::hwi_ifr <0x3c, INTF1>
-> hwi1_regs;
-
-#endif // defined (__AVR_ATmega328P__) || defined (__AVR_ATmega2560__)
-
-
-#if defined (__AVR_ATmega2560__)
-
-#endif // defined (__AVR_ATmega2560__)
-
 
 // Specifies no HWI vector for a given pin
 constexpr byte_t no_hwi_vect = 0xff;
@@ -108,8 +86,103 @@ struct __hwi_vect {
     }
 };
 
+
+
+#if defined (__AVR_ATmega328P__)
+
+typedef os::mmio::__ei_regs <
+        os::port_d::_2,
+        os::hwi_cr <0x69, ISC00, ISC01>,
+        os::hwi_msk <0x3d, INT0>,
+        os::hwi_ifr <0x3c, INTF0>
+> hwi0_regs;
+
+typedef os::mmio::__ei_regs <
+        os::port_d::_3,
+        os::hwi_cr <0x69, ISC10, ISC11>,
+        os::hwi_msk <0x3d, INT1>,
+        os::hwi_ifr <0x3c, INTF1>
+> hwi1_regs;
+
 typedef __hwi_vect <hwi0_regs, 0u> hwi0;
 typedef __hwi_vect <hwi1_regs, 1u> hwi1;
+
+typedef os::__type_list <hwi0, hwi1> hwi_list;
+
+#endif // defined (__AVR_ATmega328P__)
+
+
+#if defined (__AVR_ATmega2560__)
+
+typedef os::mmio::__ei_regs <
+        os::port_d::_0,
+        os::hwi_cr <0x69, ISC00, ISC01>,
+        os::hwi_msk <0x3d, INT0>,
+        os::hwi_ifr <0x3c, INTF0>
+> hwi0_regs;
+
+typedef os::mmio::__ei_regs <
+        os::port_d::_1,
+        os::hwi_cr <0x69, ISC10, ISC11>,
+        os::hwi_msk <0x3d, INT1>,
+        os::hwi_ifr <0x3c, INTF1>
+> hwi1_regs;
+
+typedef os::mmio::__ei_regs <
+        os::port_d::_2,
+        os::hwi_cr <0x69, ISC20, ISC21>,
+        os::hwi_msk <0x3d, INT2>,
+        os::hwi_ifr <0x3c, INTF2>
+> hwi2_regs;
+
+typedef os::mmio::__ei_regs <
+        os::port_d::_3,
+        os::hwi_cr <0x69, ISC30, ISC31>,
+        os::hwi_msk <0x3d, INT3>,
+        os::hwi_ifr <0x3c, INTF3>
+> hwi3_regs;
+
+typedef os::mmio::__ei_regs <
+        os::port_e::_4,
+        os::hwi_cr <0x6a, ISC40, ISC41>,
+        os::hwi_msk <0x3d, INT4>,
+        os::hwi_ifr <0x3c, INTF4>
+> hwi4_regs;
+
+typedef os::mmio::__ei_regs <
+        os::port_e::_5,
+        os::hwi_cr <0x6a, ISC50, ISC51>,
+        os::hwi_msk <0x3d, INT5>,
+        os::hwi_ifr <0x3c, INTF5>
+> hwi5_regs;
+
+typedef os::mmio::__ei_regs <
+        os::port_e::_6,
+        os::hwi_cr <0x6a, ISC60, ISC61>,
+        os::hwi_msk <0x3d, INT6>,
+        os::hwi_ifr <0x3c, INTF6>
+> hwi6_regs;
+
+typedef os::mmio::__ei_regs <
+        os::port_e::_7,
+        os::hwi_cr <0x6a, ISC70, ISC71>,
+        os::hwi_msk <0x3d, INT7>,
+        os::hwi_ifr <0x3c, INTF7>
+> hwi7_regs;
+
+typedef __hwi_vect <hwi0_regs, 0u> hwi0;
+typedef __hwi_vect <hwi1_regs, 1u> hwi1;
+typedef __hwi_vect <hwi2_regs, 2u> hwi2;
+typedef __hwi_vect <hwi3_regs, 3u> hwi3;
+typedef __hwi_vect <hwi4_regs, 4u> hwi4;
+typedef __hwi_vect <hwi5_regs, 5u> hwi5;
+typedef __hwi_vect <hwi6_regs, 6u> hwi6;
+typedef __hwi_vect <hwi7_regs, 7u> hwi7;
+
+typedef os::__type_list <hwi0, hwi1, hwi2, hwi3, hwi4, hwi5, hwi6, hwi7> hwi_list;
+
+
+#endif // defined (__AVR_ATmega2560__)
 
 }
 

@@ -19,16 +19,32 @@
 
 
 /**
- * This file contains Arduino compatibility definitions.
+ * This file contains Arduino compatibility definitions:
+ *  - digital pins
+ *  - analog pins
+ *  - mapping of digital pins to hardware interrupts
  */
 
 
 
 #include <dots-core/ports.h>
-
+#include <dots-core/interrupts.h>
+#include <dots-core/meta.h>
 
 namespace os {
 namespace compat {
+
+
+/**
+ * Creates a (pin, hwi) pair if the pin defined for the hwi is the same as _digital_pin.
+ */
+template <class _digital_pin, class _hwi>
+struct __map_hwi_pin {
+    typedef typename os::__enable <
+                os::__same_type <_digital_pin, typename _hwi::_pin_type>::value,
+                os::__pair <_digital_pin, _hwi>
+    >::result result;
+};
 
 
 #if defined (__AVR_ATmega328P__)
@@ -61,6 +77,13 @@ typedef port_c::_3 A3;
 typedef port_c::_4 A4;
 typedef port_c::_5 A5;
 typedef port_c::_6 A6;
+
+// External interrupt pins
+typedef os::__type_list <
+            __map_hwi_pin <D2, os::hwi0>::result,
+            __map_hwi_pin <D3, os::hwi1>::result
+        > hwi_pin_map;
+
 
 #endif // defined (__AVR_ATmega328P__)
 
@@ -135,7 +158,7 @@ typedef port_l::_0 D49;
 typedef port_b::_3 D50;
 typedef port_b::_2 D51;
 typedef port_b::_1 D52;
-typedef typename port_b::_0 D53;
+typedef port_b::_0 D53;
 
 // Analog pins
 // 0 - 7
@@ -157,6 +180,17 @@ typedef port_k::_4 A12;
 typedef port_k::_5 A13;
 typedef port_k::_6 A14;
 typedef port_k::_7 A15;
+
+// External interrupt pins
+typedef os::__type_list <
+            __map_hwi_pin <D21, os::hwi0>::result,
+            __map_hwi_pin <D20, os::hwi1>::result,
+            __map_hwi_pin <D19, os::hwi2>::result,
+            __map_hwi_pin <D18, os::hwi3>::result,
+            __map_hwi_pin <D2, os::hwi4>::result,
+            __map_hwi_pin <D3, os::hwi5>::result
+        > hwi_pin_map;
+
 
 #endif // defined (__AVR_ATmega2560__)
 
