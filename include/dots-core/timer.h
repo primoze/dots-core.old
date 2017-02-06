@@ -21,6 +21,7 @@
 
 #include <dots-core/common.h>
 #include <dots-core/mmio.h>
+#include <dots-core/meta.h>
 
 namespace os {
 namespace timer {
@@ -179,7 +180,7 @@ template <ioaddr_t _addr, byte_t _tov, byte_t _ocfa, byte_t _ocfb, byte_t _icf>
 using tifr_16bit = __ti_reg_16bit <_addr, _tov, _ocfa, _ocfb, _icf>;
 
 
-#if defined (__AVR_ATmega328P__) || defined (__AVR_ATmega2560__)
+#if defined (__AVR_ATmega328P__)
 
 // TC0
 typedef os::mmio::__timer_8bit_regs <
@@ -211,16 +212,99 @@ typedef os::mmio::__timer_16bit_regs <
         os::timer::tcnt_16bit <0x84>,
         os::timer::ocr_16bit <0x88>,
         os::timer::ocr_16bit <0x8a>,
+        os::timer::ocr_16bit <0x8c>,
         os::timer::icr_16bit <0x86>,
         os::timer::timsk_16bit <0x6f, TOIE1, OCIE1A, OCIE1B, ICIE1>,
         os::timer::tifr_16bit <0x36, TOV1, OCF1A, OCF1B, ICF1>
     > timer1_regs;
 
-#endif // defined (__AVR_ATmega328P__) || defined (__AVR_ATmega2560__)
+typedef os::__type_list <timer0_regs, timer2_regs> timer8_list;
+typedef os::__type_list <timer1_regs> timer16_list;
+
+#endif // defined (__AVR_ATmega328P__)
 
 #if defined (__AVR_ATmega2560__)
 
-// todo: define additional timers
+// TC0
+typedef os::mmio::__timer_8bit_regs <
+        os::timer::tccra_8bit <0x44, WGM00, WGM01, COM0A0, COM0A1, COM0B0, COM0B1>,
+        os::timer::tccrb_8bit <0x45, CS00, CS01, CS02, WGM02, FOC0A, FOC0B>,
+        os::timer::tcnt_8bit <0x46>,
+        os::timer::ocr_8bit <0x47>,
+        os::timer::ocr_8bit <0x48>,
+        os::timer::timsk_8bit <0x6e, TOIE0, OCIE0A, OCIE0B>,
+        os::timer::tifr_8bit <0x35, TOV0, OCF0A, OCF0B>
+    > timer0_regs;
+
+// TC2
+typedef os::mmio::__timer_8bit_regs <
+        os::timer::tccra_8bit <0xb0, WGM20, WGM21, COM2A0, COM2A1, COM2B0, COM2B1>,
+        os::timer::tccrb_8bit <0xb1, CS20, CS21, CS22, WGM22, FOC2A, FOC2B>,
+        os::timer::tcnt_8bit <0xb2>,
+        os::timer::ocr_8bit <0xb3>,
+        os::timer::ocr_8bit <0xb4>,
+        os::timer::timsk_8bit <0x70, TOIE2, OCIE2A, OCIE2B>,
+        os::timer::tifr_8bit <0x37, TOV2, OCF2A, OCF2B>
+    > timer2_regs;
+
+// TC1
+typedef os::mmio::__timer_16bit_regs <
+        os::timer::tccra_16bit <0x80, WGM10, WGM11, COM1A0, COM1A1, COM1B0, COM1B1>,
+        os::timer::tccrb_16bit <0x81, CS10, CS11, CS12, WGM12, WGM13, ICNC1, ICES1>,
+        os::timer::tccrc_16bit <0x82, FOC1A, FOC1B>,
+        os::timer::tcnt_16bit <0x84>,
+        os::timer::ocr_16bit <0x88>,
+        os::timer::ocr_16bit <0x8a>,
+        os::timer::ocr_16bit <0x8c>,
+        os::timer::icr_16bit <0x86>,
+        os::timer::timsk_16bit <0x6f, TOIE1, OCIE1A, OCIE1B, ICIE1>,
+        os::timer::tifr_16bit <0x36, TOV1, OCF1A, OCF1B, ICF1>
+    > timer1_regs;
+
+// TC3
+typedef os::mmio::__timer_16bit_regs <
+        os::timer::tccra_16bit <0x90, WGM30, WGM31, COM3A0, COM3A1, COM3B0, COM3B1>,
+        os::timer::tccrb_16bit <0x91, CS30, CS31, CS32, WGM32, WGM33, ICNC3, ICES3>,
+        os::timer::tccrc_16bit <0x92, FOC3A, FOC3B>,
+        os::timer::tcnt_16bit <0x94>,
+        os::timer::ocr_16bit <0x98>,
+        os::timer::ocr_16bit <0x9a>,
+        os::timer::ocr_16bit <0x9c>,
+        os::timer::icr_16bit <0x96>,
+        os::timer::timsk_16bit <0x71, TOIE3, OCIE3A, OCIE3B, ICIE3>,
+        os::timer::tifr_16bit <0x38, TOV3, OCF3A, OCF3B, ICF3>
+    > timer3_regs;
+
+// TC4
+typedef os::mmio::__timer_16bit_regs <
+        os::timer::tccra_16bit <0xa0, WGM40, WGM41, COM4A0, COM4A1, COM4B0, COM4B1>,
+        os::timer::tccrb_16bit <0xa1, CS40, CS41, CS42, WGM42, WGM43, ICNC4, ICES4>,
+        os::timer::tccrc_16bit <0xa2, FOC4A, FOC4B>,
+        os::timer::tcnt_16bit <0xa4>,
+        os::timer::ocr_16bit <0xa8>,
+        os::timer::ocr_16bit <0xaa>,
+        os::timer::ocr_16bit <0xac>,
+        os::timer::icr_16bit <0xa6>,
+        os::timer::timsk_16bit <0x72, TOIE4, OCIE4A, OCIE4B, ICIE4>,
+        os::timer::tifr_16bit <0x39, TOV4, OCF4A, OCF4B, ICF4>
+    > timer4_regs;
+
+// TC5
+typedef os::mmio::__timer_16bit_regs <
+        os::timer::tccra_16bit <0x120, WGM50, WGM51, COM5A0, COM5A1, COM5B0, COM5B1>,
+        os::timer::tccrb_16bit <0x121, CS50, CS51, CS52, WGM52, WGM53, ICNC5, ICES5>,
+        os::timer::tccrc_16bit <0x122, FOC5A, FOC5B>,
+        os::timer::tcnt_16bit <0x124>,
+        os::timer::ocr_16bit <0x128>,
+        os::timer::ocr_16bit <0x12a>,
+        os::timer::ocr_16bit <0x12c>,
+        os::timer::icr_16bit <0x126>,
+        os::timer::timsk_16bit <0x73, TOIE5, OCIE5A, OCIE5B, ICIE5>,
+        os::timer::tifr_16bit <0x3a, TOV5, OCF5A, OCF5B, ICF5>
+    > timer5_regs;
+
+typedef os::__type_list <timer0_regs, timer2_regs> timer8_list;
+typedef os::__type_list <timer1_regs, timer3_regs, timer4_regs, timer5_regs> timer16_list;
 
 #endif //  defined (__AVR_ATmega2560__)
 

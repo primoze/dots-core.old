@@ -104,12 +104,14 @@ template <
         class _tcnt,
         class _ocra,
         class _ocrb,
+        class _ocrc,
         class _icr,
         class _timsk,
         class _tifr
     >
 struct __timer_16bit_regs : public __timer_8bit_regs <_tccra, _tccrb, _tcnt, _ocra, _ocrb, _timsk, _tifr> {
     typedef _tccrc tccrc;
+    typedef _ocrc ocrc;
     typedef _icr icr;
 };
 

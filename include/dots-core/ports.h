@@ -20,6 +20,7 @@
 
 #include <dots-core/mmio.h>
 #include <dots-core/pins.h>
+#include <dots-core/meta.h>
 
 namespace os {
 
@@ -39,7 +40,7 @@ struct __io_port {
 
 
 // Define things 328p and 2560 have in common
-#if defined (__AVR_ATmega328P__) || defined (__AVR_ATmega2560__)
+#if defined (__AVR_ATmega328P__)
 
 
 typedef os::mmio::__port_regs <
@@ -60,10 +61,10 @@ typedef os::mmio::__port_regs <
         os::mmio::__io_reg <0x2b>
     > port_d_regs;
 
+
+// Ports B and D have all 8 pins
 typedef __io_port <port_b_regs> port_b;
 typedef __io_port <port_d_regs> port_d;
-
-#if defined (__AVR_ATmega328P__)
 
 // Port C only has 7 pins on 328p
 struct port_c {
@@ -76,14 +77,9 @@ struct port_c {
     typedef digital_pin<port_c_regs, 6, 6, 6> _6;
 };
 
-#elif defined (__AVR_ATmega2560__)
+typedef os::__type_list <port_b, port_c, port_d> port_list;
 
-// On 2560 it has all 8 pins
-typedef __io_port <port_c_regs> port_c;
-
-#endif // #elif defined (__AVR_ATmega2560__)
-
-#endif // defined (__AVR_ATmega328P__) || defined (__AVR_ATmega2560__)
+#endif // defined (__AVR_ATmega328P__)
 
 
 
@@ -95,6 +91,24 @@ typedef os::mmio::__port_regs <
         os::mmio::__io_reg <0x21>,
         os::mmio::__io_reg <0x22>
     > port_a_regs;
+
+typedef os::mmio::__port_regs <
+        os::mmio::__io_reg <0x23>,
+        os::mmio::__io_reg <0x24>,
+        os::mmio::__io_reg <0x25>
+    > port_b_regs;
+
+typedef os::mmio::__port_regs <
+        os::mmio::__io_reg <0x26>,
+        os::mmio::__io_reg <0x27>,
+        os::mmio::__io_reg <0x28>
+    > port_c_regs;
+
+typedef os::mmio::__port_regs <
+        os::mmio::__io_reg <0x29>,
+        os::mmio::__io_reg <0x2a>,
+        os::mmio::__io_reg <0x2b>
+    > port_d_regs;
 
 typedef os::mmio::__port_regs <
         os::mmio::__io_reg <0x2c>,
@@ -138,7 +152,11 @@ typedef os::mmio::__port_regs <
         os::mmio::__io_reg <0x10b>
     > port_l_regs;
 
+// These ports all have 8 pins
 typedef __io_port <port_a_regs> port_a;
+typedef __io_port <port_b_regs> port_b;
+typedef __io_port <port_c_regs> port_c;
+typedef __io_port <port_d_regs> port_d;
 typedef __io_port <port_e_regs> port_e;
 typedef __io_port <port_f_regs> port_f;
 typedef __io_port <port_h_regs> port_h;
@@ -156,6 +174,7 @@ struct port_g {
     typedef digital_pin<port_c_regs, 5, 5, 5> _5;
 };
 
+typedef os::__type_list <port_a, port_b, port_c, port_d, port_e, port_f, port_g, port_h, port_j, port_k, port_l> port_list;
 
 #endif // defined (__AVR_ATmega2560__)
 
