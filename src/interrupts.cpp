@@ -56,6 +56,8 @@ OS_C_ABI void __os_clear_interrupt_handler(byte_t vect) {
   }
 }
 
+#if defined (__AVR_ATmega328P__) || defined (__AVR_ATmega2560__)
+
 ISR(INT0_vect) {
     invoke_handler(0);
 }
@@ -63,6 +65,37 @@ ISR(INT0_vect) {
 ISR(INT1_vect) {
     invoke_handler(1);
 }
+
+#endif // defined (__AVR_ATmega328P___) || defined (__AVR_ATmega2560__)
+
+
+#if defined (__AVR_ATmega2560__)
+
+ISR(INT2_vect) {
+    invoke_handler(2);
+}
+
+ISR(INT3_vect) {
+    invoke_handler(3);
+}
+
+ISR(INT4_vect) {
+    invoke_handler(4);
+}
+
+ISR(INT5_vect) {
+    invoke_handler(5);
+}
+
+ISR(INT6_vect) {
+    invoke_handler(6);
+}
+
+ISR(INT7_vect) {
+    invoke_handler(7);
+}
+
+#endif // defined (__AVR_ATmega2560__)
 
 
 }
